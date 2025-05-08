@@ -3,4 +3,5 @@ yarn-error.log
 .env
 .DS_Store
 
-*.csv
+**/*.csv
+**/*.log
