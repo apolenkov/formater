@@ -8,7 +8,6 @@ import _ from 'lodash';
 import { CONSTANTS } from '../constants.mjs';
 import { setupLogger } from '../logger.mjs';
 import { generateDateChunks } from '../utils/dateUtils.mjs';
-import { ensureDirectoryExists } from '../utils/fileSystem.mjs';
 import { processChunk } from './service_api.mjs';
 import { SERVICE_CONSTANTS } from './service_constants.mjs';
 import { convertToIntelInvestFormat } from './trade_formatter.mjs';
@@ -19,9 +18,10 @@ dotenv.config();
 const logger = setupLogger(SERVICE_CONSTANTS.INTEGRATION_NAME);
 
 // Ensure logs directory exists
-await ensureDirectoryExists(CONSTANTS.PATHS.LOGS_DIR);
+await fs.mkdir(CONSTANTS.PATHS.LOGS_DIR, { recursive: true });
+
 // Ensure output directory exists
-await ensureDirectoryExists(CONSTANTS.PATHS.OUTPUT_DIR);
+await fs.mkdir(CONSTANTS.PATHS.OUTPUT_DIR, { recursive: true });
 
 // Bybit API client initialization
 const client = new RestClientV5({

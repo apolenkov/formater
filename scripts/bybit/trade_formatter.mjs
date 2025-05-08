@@ -4,6 +4,10 @@ import moment from 'moment';
 
 import { SERVICE_CONSTANTS } from './service_constants.mjs';
 
+// Configure Big.js to use fixed-point notation instead of exponential
+Big.PE = 40; // Positive exponent limit
+Big.NE = -40; // Negative exponent limit
+
 /**
  *
  * Converts a Bybit trade to IntelInvest format
@@ -25,8 +29,9 @@ export function convertToIntelInvestFormat(trade) {
     'DD.MM.YYYY HH:mm:ss',
   );
 
-  const quantity = new Big(base.cashFlow).abs().toString();
-  const cashFlow = new Big(target.cashFlow).abs().toString();
+  // Use toFixed to ensure decimal representation
+  const quantity = new Big(base.cashFlow).abs().toFixed();
+  const cashFlow = new Big(target.cashFlow).abs().toFixed();
 
   // Using lodash to create objects and then format them
   const dealInData = {
