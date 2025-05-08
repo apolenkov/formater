@@ -15,6 +15,7 @@ Big.NE = -40; // Negative exponent limit
  * @returns {string} - Formatted CSV lines
  */
 export function convertToIntelInvestFormat(trade) {
+  // TODO: Check case > 2
   const [base, target] = trade;
 
   const isBuy = base.side === SERVICE_CONSTANTS.BUYING_TYPE;

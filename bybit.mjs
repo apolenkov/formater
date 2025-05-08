@@ -10,7 +10,6 @@ import { SERVICE_CONSTANTS } from './libs/bybit/service_constants.mjs';
 import { convertToIntelInvestFormat } from './libs/bybit/trade_formatter.mjs';
 import { CONSTANTS } from './libs/constants.mjs';
 import { setupLogger } from './libs/logger.mjs';
-import { generateDateChunks } from './libs/utils/dateUtils.mjs';
 
 dotenv.config();
 
@@ -31,56 +30,13 @@ const tradeService = new BybitTradeService(client, logger);
  * @param {string} startDate - Start date in YYYY-MM-DD format
  * @param {string} endDate - End date in YYYY-MM-DD format
  */
-async function execute(startDate, endDate) {
+async function exportTrades(startDate, endDate) {
   logger.info('Starting execution', { startDate, endDate });
 
-  // Generate array of date chunks
-  const dateChunks = generateDateChunks(
-    startDate,
-    endDate,
-    SERVICE_CONSTANTS.CHUNK_SIZE_DAYS,
-  );
-
-  logger.info(`Generated ${dateChunks.length} date chunks`);
-
-  // Process chunks sequentially using lodash
-  const logsArrays = await _.reduce(
-    dateChunks,
-    async (previousPromise, chunk, index) => {
-      const accumulator = await previousPromise;
-      const result = await tradeService.processChunk(
-        chunk,
-        index,
-        dateChunks.length,
-      );
-
-      return result.length > 0 ? [...accumulator, result] : accumulator;
-    },
-    Promise.resolve([]),
-  );
-
-  // Flatten the array of arrays
-  const trades = logsArrays.flat();
-
-  logger.info('Processing complete', { totalTrades: trades.length });
-
-  if (trades.length === 0) {
-    logger.warn('No trades found for the specified period');
-
-    return;
-  }
-
-  // Group trades by orderId and convert to CSV format
-  const groupedTrades = _.groupBy(trades, 'orderId');
-
-  logger.debug(
-    `Grouped into ${Object.keys(groupedTrades).length} unique orders`,
-  );
+  const trades = await tradeService.getAll(startDate, endDate);
 
   const csvRows = _.values(
-    _.mapValues(groupedTrades, tradeGroup =>
-      convertToIntelInvestFormat(tradeGroup),
-    ),
+    _.mapValues(trades, tradeGroup => convertToIntelInvestFormat(tradeGroup)),
   );
   const csvContent = _.concat([CONSTANTS.CSV_HEADER], csvRows).join('\n');
 
@@ -91,7 +47,8 @@ async function execute(startDate, endDate) {
   );
 
   await fs.writeFile(fileName, csvContent, 'utf8');
+
   logger.info('Export successful', { fileName, rowCount: csvRows.length });
 }
 
-execute('2024-11-01', '2025-05-01').then().catch(console.error);
+exportTrades('2024-11-01', '2025-05-01').then().catch(console.error);

@@ -1,5 +1,6 @@
 import _ from 'lodash';
 
+import { generateDateChunks } from '../utils/dateUtils.mjs';
 import { SERVICE_CONSTANTS } from './service_constants.mjs';
 
 /**
@@ -118,5 +119,48 @@ export class BybitTradeService {
     });
 
     return [];
+  }
+
+  async getAll(startDate, endDate) {
+    // Generate array of date chunks
+    const dateChunks = generateDateChunks(
+      startDate,
+      endDate,
+      SERVICE_CONSTANTS.CHUNK_SIZE_DAYS,
+    );
+
+    this.logger.info(`Generated ${dateChunks.length} date chunks`);
+
+    // Process chunks sequentially using lodash
+    const results = await _.reduce(
+      dateChunks,
+      async (previousPromise, chunk, index) => {
+        const accumulator = await previousPromise;
+        const result = await this.processChunk(chunk, index, dateChunks.length);
+
+        return result.length > 0 ? [...accumulator, result] : accumulator;
+      },
+      Promise.resolve([]),
+    );
+
+    // Flatten the array of arrays
+    const trades = results.flat();
+
+    this.logger.info('Processing complete', { totalTrades: trades.length });
+
+    if (trades.length === 0) {
+      this.logger.warn('No trades found for the specified period');
+
+      return;
+    }
+
+    // Group trades by orderId and convert to CSV format
+    const groupedTrades = _.groupBy(trades, 'orderId');
+
+    this.logger.debug(
+      `Grouped into ${Object.keys(groupedTrades).length} unique orders`,
+    );
+
+    return groupedTrades;
   }
 }
