@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { describe, it } from 'mocha';
 
-import { CONSTANTS } from '../../libs/constants.mjs';
+import { CONSTANTS } from '../libs/constants.mjs';
 
 describe('Constants', () => {
   it('should be defined', () => {

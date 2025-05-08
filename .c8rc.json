@@ -1,6 +1,6 @@
 {
   "all": true,
-  "include": ["scripts/**/*.mjs"],
+  "include": ["libs/**/*.mjs"],
   "exclude": ["node_modules/**", "tests/**"],
   "reporter": ["text", "lcov", "html"],
   "check-coverage": true,
