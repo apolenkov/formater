@@ -8,7 +8,7 @@ import _ from 'lodash';
 import { CONSTANTS } from '../constants.mjs';
 import { setupLogger } from '../logger.mjs';
 import { generateDateChunks } from '../utils/dateUtils.mjs';
-import { processChunk } from './service_api.mjs';
+import { BybitTradeService } from './service_api.mjs';
 import { SERVICE_CONSTANTS } from './service_constants.mjs';
 import { convertToIntelInvestFormat } from './trade_formatter.mjs';
 
@@ -28,6 +28,9 @@ const client = new RestClientV5({
   key: process.env.BYBIT_API_KEY,
   secret: process.env.BYBIT_API_SECRET,
 });
+
+// Initialize the trade service
+const tradeService = new BybitTradeService(client, logger);
 
 /**
  * Main execution function
@@ -51,12 +54,10 @@ async function execute(startDate, endDate) {
     dateChunks,
     async (previousPromise, chunk, index) => {
       const accumulator = await previousPromise;
-      const result = await processChunk(
+      const result = await tradeService.processChunk(
         chunk,
         index,
         dateChunks.length,
-        client,
-        logger,
       );
 
       return result.length > 0 ? [...accumulator, result] : accumulator;
