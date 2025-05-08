@@ -239,4 +239,60 @@ describe('BybitTradeService', () => {
       expect(mockLogger.info.calledWith('No trades found in chunk')).to.be.true;
     });
   });
+
+  describe('getAll', () => {
+    it('should fetch all trades for the specified date range', async () => {
+      const testContext = setupTest();
+      const { mockLogger, service } = testContext;
+
+      // Mock data
+      const mockTrades = [
+        { id: '1', symbol: 'BTCUSDT', price: '30000', orderId: 'order1' },
+        { id: '2', symbol: 'ETHUSDT', price: '2000', orderId: 'order2' },
+      ];
+
+      // Mock the getTradesLogs method to return trades for two chunks
+      stub(service, 'getTradesLogs')
+        .onFirstCall()
+        .resolves(mockTrades.slice(0, 1)) // First chunk
+        .onSecondCall()
+        .resolves(mockTrades.slice(1)); // Second chunk
+
+      const startDate = moment('2021-01-01');
+      const endDate = moment('2021-01-30');
+
+      // Call the method
+      const result = await service.getAll(startDate, endDate);
+
+      console.log(result);
+
+      // Assertions
+      expect(result).to.be.an('object');
+      expect(Object.keys(result)).to.have.lengthOf(2); // Two unique orders
+      expect(result['order1']).to.deep.equal([mockTrades[0]]);
+      expect(result['order2']).to.deep.equal([mockTrades[1]]);
+      expect(mockLogger.info.calledWith('Processing complete')).to.be.true;
+      expect(mockLogger.warn.called).to.be.false; // No warning for trades found
+    });
+
+    it('should handle no trades found gracefully', async () => {
+      const testContext = setupTest();
+      const { mockLogger, service } = testContext;
+
+      // Mock the getTradesLogs method to return empty array
+      stub(service, 'getTradesLogs').resolves([]);
+
+      const startDate = moment('2021-01-01');
+      const endDate = moment('2021-01-02');
+
+      // Call the method
+      const result = await service.getAll(startDate, endDate);
+
+      // Assertions
+      expect(result).to.be.undefined; // No trades found
+      expect(
+        mockLogger.warn.calledWith('No trades found for the specified period'),
+      ).to.be.true;
+    });
+  });
 });
