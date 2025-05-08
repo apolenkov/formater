@@ -47,7 +47,7 @@
     "test": "mocha 'tests/**/*.test.mjs'",
     "test:coverage": "c8 npm test",
     "bybit": "node bybit.mjs",
-    "bybit:debug": "node --inspect-brk=8000 scripts/bybit/execute.mjs"
+    "bybit:debug": "node --inspect-brk=8000 libs/bybit/execute.mjs"
   },
   "private": true,
   "engines": {

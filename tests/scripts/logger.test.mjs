@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, it } from 'mocha';
 import { createSandbox } from 'sinon';
 import winston from 'winston';
 
-import { setupLogger } from '../../scripts/logger.mjs';
+import { setupLogger } from '../../libs/logger.mjs';
 
 describe('Logger', () => {
   // Use a stubs object to store all stubs and mocks

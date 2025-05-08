@@ -5,12 +5,12 @@ import { RestClientV5 } from 'bybit-api';
 import dotenv from 'dotenv';
 import _ from 'lodash';
 
-import { BybitTradeService } from './scripts/bybit/service_api.mjs';
-import { SERVICE_CONSTANTS } from './scripts/bybit/service_constants.mjs';
-import { convertToIntelInvestFormat } from './scripts/bybit/trade_formatter.mjs';
-import { CONSTANTS } from './scripts/constants.mjs';
-import { setupLogger } from './scripts/logger.mjs';
-import { generateDateChunks } from './scripts/utils/dateUtils.mjs';
+import { BybitTradeService } from './libs/bybit/service_api.mjs';
+import { SERVICE_CONSTANTS } from './libs/bybit/service_constants.mjs';
+import { convertToIntelInvestFormat } from './libs/bybit/trade_formatter.mjs';
+import { CONSTANTS } from './libs/constants.mjs';
+import { setupLogger } from './libs/logger.mjs';
+import { generateDateChunks } from './libs/utils/dateUtils.mjs';
 
 dotenv.config();
 
