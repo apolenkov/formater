@@ -30,8 +30,8 @@ jobs:
       - name: Install dependencies
         run: yarn install --frozen-lockfile
 
-      - name: Run tests
-        run: yarn test
+      - name: Generate coverage report
+        run: yarn test:coverage
 
       # TODO: Will do it
       #      - name: Upload coverage to Codecov

@@ -30,8 +30,8 @@ jobs:
       - name: Install dependencies
         run: yarn install --frozen-lockfile
 
-      - name: Run tests
-        run: yarn test
+      - name: Lint code
+        run: yarn lint || true # Run but don't fail workflow
 
       # TODO: Will do it
       #      - name: Upload coverage to Codecov
