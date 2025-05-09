@@ -114,11 +114,13 @@ Docker support is planned for future releases to simplify deployment and usage.
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
-## TODO
+## Should do in future...
 
 - Wrap to Docker
+- Use typescript
 - Use codecov report token
 - Add support for additional Bybit data types (Earn values)
+- Add support for additional Binance data types (Earn values) and trades
 
 ## License
 
