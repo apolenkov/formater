@@ -30,11 +30,9 @@ export function convertToIntelInvestFormat(trade) {
     'DD.MM.YYYY HH:mm:ss',
   );
 
-  // Use toFixed to ensure decimal representation
   const quantity = new Big(base.cashFlow).abs().toFixed();
   const cashFlow = new Big(target.cashFlow).abs().toFixed();
 
-  // Using lodash to create objects and then format them
   const dealInData = {
     type: typeIn,
     date: formattedDate,
@@ -67,7 +65,6 @@ export function convertToIntelInvestFormat(trade) {
     tradeSystemId: SERVICE_CONSTANTS.TRADE_SOURCE,
   };
 
-  // Convert objects to CSV lines
   const dealIn = _.values(dealInData).join(';');
   const dealOut = _.values(dealOutData).join(';');
 

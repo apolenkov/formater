@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import moment from 'moment';
 
 import { generateDateChunks } from '../utils/dateUtils.mjs';
 import { SERVICE_CONSTANTS } from './service_constants.mjs';
@@ -38,8 +39,8 @@ export class BybitTradeService {
     try {
       this.logger.debug('Fetching transaction log', {
         page,
-        startTime: new Date(startTimestamp).toISOString(),
-        endTime: new Date(endTimestamp).toISOString(),
+        startTime: moment(startTimestamp).toISOString(),
+        endTime: moment(endTimestamp).toISOString(),
         cursor,
       });
 
@@ -55,7 +56,6 @@ export class BybitTradeService {
 
       this.logger.debug(`Received ${newItems} items`, { page });
 
-      // Using lodash to concatenate arrays without mutation
       const newTransfers =
         newItems > 0 ? _.concat(transfers, response.result.list) : transfers;
 
@@ -76,7 +76,7 @@ export class BybitTradeService {
         stack: error.stack,
       });
 
-      return transfers; // Return what we have so far
+      return transfers;
     }
   }
 
@@ -125,7 +125,7 @@ export class BybitTradeService {
    * Fetches all trades between the specified date range
    * @param {String} startDate - The start date for fetching trades
    * @param {String} endDate - The end date for fetching trades
-   * @returns {Promise<Object<String, Array>|undefined>} - Object containing trades grouped by
+   * @returns {Promise<Object<String, Array>>} - Object containing trades grouped by
    *  orderId or undefined if no trades found
    */
   async getAll(startDate, endDate) {
@@ -138,7 +138,7 @@ export class BybitTradeService {
 
     this.logger.info(`Generated ${dateChunks.length} date chunks`);
 
-    // Process chunks sequentially using lodash
+    // Process chunks sequentially
     const results = await _.reduce(
       dateChunks,
       async (previousPromise, chunk, index) => {
@@ -150,7 +150,6 @@ export class BybitTradeService {
       Promise.resolve([]),
     );
 
-    // Flatten the array of arrays
     const trades = results.flat();
 
     this.logger.info('Processing complete', { totalTrades: trades.length });
@@ -158,7 +157,7 @@ export class BybitTradeService {
     if (trades.length === 0) {
       this.logger.warn('No trades found for the specified period');
 
-      return;
+      return {};
     }
 
     // Group trades by orderId and convert to CSV format

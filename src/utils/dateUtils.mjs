@@ -50,7 +50,7 @@ export function generateDateChunks(startDate, endDate, chunkSizeInDays) {
   if (lastChunkStart.isSameOrBefore(end, 'day')) {
     chunks.push({
       chunkStart: lastChunkStart,
-      chunkEnd: end.clone(),
+      chunkEnd: end,
     });
   }
 

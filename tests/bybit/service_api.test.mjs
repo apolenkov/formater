@@ -3,8 +3,8 @@ import { afterEach, describe, it } from 'mocha';
 import moment from 'moment';
 import { restore, stub } from 'sinon';
 
-import { BybitTradeService } from '../../libs/bybit/service_api.mjs';
-import { SERVICE_CONSTANTS } from '../../libs/bybit/service_constants.mjs';
+import { BybitTradeService } from '../../src/bybit/service_api.mjs';
+import { SERVICE_CONSTANTS } from '../../src/bybit/service_constants.mjs';
 
 describe('BybitTradeService', () => {
   // Setup function to create fresh mocks and service for each test
@@ -258,8 +258,8 @@ describe('BybitTradeService', () => {
         .onSecondCall()
         .resolves(mockTrades.slice(1)); // Second chunk
 
-      const startDate = moment('2021-01-01');
-      const endDate = moment('2021-01-30');
+      const startDate = '2021-01-01';
+      const endDate = '2021-01-30';
 
       // Call the method
       const result = await service.getAll(startDate, endDate);
@@ -282,14 +282,14 @@ describe('BybitTradeService', () => {
       // Mock the getTradesLogs method to return empty array
       stub(service, 'getTradesLogs').resolves([]);
 
-      const startDate = moment('2021-01-01');
-      const endDate = moment('2021-01-02');
+      const startDate = '2021-01-01';
+      const endDate = '2021-01-02';
 
       // Call the method
       const result = await service.getAll(startDate, endDate);
 
       // Assertions
-      expect(result).to.be.undefined; // No trades found
+      expect(result).to.deep.equal({}); // No trades found
       expect(
         mockLogger.warn.calledWith('No trades found for the specified period'),
       ).to.be.true;

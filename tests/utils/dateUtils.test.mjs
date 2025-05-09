@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { describe, it } from 'mocha';
 
-import { generateDateChunks } from '../../libs/utils/dateUtils.mjs';
+import { generateDateChunks } from '../../src/utils/dateUtils.mjs';
 
 describe('Date Utils Tests', () => {
   it('should generate correct date chunks', () => {

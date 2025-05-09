@@ -7,10 +7,11 @@ export const SERVICE_CONSTANTS = {
     SHARE_OUT: 'SHARE_OUT',
   },
 
+  BUYING_TYPE: 'Buy',
+
   // Trade source
   TRADE_SOURCE: 'bybit',
   INTEGRATION_NAME: 'bybit-integration',
-  BUYING_TYPE: 'Buy',
 
   // API parameters
   CHUNK_SIZE_DAYS: 7,

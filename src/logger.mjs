@@ -1,5 +1,7 @@
 import winston from 'winston';
 
+const DEFAULT_LEVEL = 'info';
+
 /**
  * Sets up a configured logger instance
  * @param {string} serviceName - Name of the service for logging
@@ -7,7 +9,7 @@ import winston from 'winston';
  */
 export function setupLogger(serviceName) {
   return winston.createLogger({
-    level: process.env.LOG_LEVEL || 'info',
+    level: process.env.LOG_LEVEL || DEFAULT_LEVEL,
     format: winston.format.combine(
       winston.format.timestamp(),
       winston.format.json(),

@@ -2,8 +2,8 @@ import { expect } from 'chai';
 import { describe, it } from 'mocha';
 import moment from 'moment';
 
-import { SERVICE_CONSTANTS } from '../../libs/bybit/service_constants.mjs';
-import { convertToIntelInvestFormat } from '../../libs/bybit/trade_formatter.mjs';
+import { SERVICE_CONSTANTS } from '../../src/bybit/service_constants.mjs';
+import { convertToIntelInvestFormat } from '../../src/bybit/trade_formatter.mjs';
 
 describe('Trade Formatter', () => {
   describe('convertToIntelInvestFormat', () => {
@@ -68,7 +68,7 @@ describe('Trade Formatter', () => {
       const orderId = 'order456';
       const trade = [
         {
-          side: SERVICE_CONSTANTS.SELLING_TYPE,
+          side: SERVICE_CONSTANTS.TRADE_TYPES.SHARE_SELL,
           transactionTime: timestamp.toString(),
           cashFlow: '0.5',
           currency: 'ETH',
