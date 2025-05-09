@@ -33,15 +33,6 @@ jobs:
       - name: Lint code
         run: yarn lint
 
-      # TODO: Will do it
-      #      - name: Upload coverage to Codecov
-      #        uses: codecov/codecov-action@v4
-      #        with:
-      #          token: ${{ secrets.CODECOV_TOKEN }}
-      #          directory: ./coverage
-      #          fail_ci_if_error: true
-      #          verbose: true # More detailed logs for troubleshooting
-
       - name: Cache Yarn dependencies
         uses: actions/cache@v3
         with:
