@@ -31,7 +31,7 @@ jobs:
         run: yarn install --frozen-lockfile
 
       - name: Lint code
-        run: yarn lint || true # Run but don't fail workflow
+        run: yarn lint
 
       # TODO: Will do it
       #      - name: Upload coverage to Codecov
