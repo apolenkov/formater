@@ -15,7 +15,7 @@ Big.NE = -40; // Negative exponent limit
  * @returns {string} - Formatted CSV lines
  */
 export function convertToIntelInvestFormat(trades) {
-  if (trades.length > 2) throw new Error('In trade pair must be iteration');
+  if (trades.length > 2) throw new Error('In trade pair must be two iteration');
 
   const [base, target] = trades;
 

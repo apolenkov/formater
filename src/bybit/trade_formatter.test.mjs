@@ -142,5 +142,38 @@ describe('Trade Formatter', () => {
 
       expect(dealOutParts[3]).to.equal('0.0000002');
     });
+
+    it('should throw an error when trade pair has more than 2 items', () => {
+      // Arrange
+      const timestamp = Date.now();
+      const tradeId = 'trade123';
+      const trade = [
+        {
+          side: SERVICE_CONSTANTS.BUYING_TYPE,
+          transactionTime: timestamp.toString(),
+          cashFlow: '-100',
+          currency: 'BTC',
+          tradePrice: '20000',
+          tradeId,
+        },
+        {
+          cashFlow: '2000000',
+          currency: 'USDT',
+          feeRate: '0.1',
+          tradeId,
+        },
+        {
+          cashFlow: '50',
+          currency: 'ETH',
+          feeRate: '0.05',
+          tradeId,
+        },
+      ];
+
+      // Act & Assert
+      expect(() => convertToIntelInvestFormat(trade)).to.throw(
+        'In trade pair must be two iteration',
+      );
+    });
   });
 });
