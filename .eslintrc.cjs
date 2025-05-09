@@ -105,7 +105,10 @@ module.exports = {
 
     // 3.2 Formatting and indentation
     'semi': 'error', // Require semicolons
-    'quotes': ['error', 'single'], // Single quotes for strings
+
+    // Single quotes for strings
+    // Added avoidEscape to fix prettier conflict
+    'quotes': ['error', 'single', { avoidEscape: true }],
 
     'indent': ['error', 2, { SwitchCase: 1 }], // 2 space indent (upgraded)
     'eol-last': 'error', // Newline at end of file
