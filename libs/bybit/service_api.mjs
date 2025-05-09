@@ -121,6 +121,13 @@ export class BybitTradeService {
     return [];
   }
 
+  /**
+   * Fetches all trades between the specified date range
+   * @param {String} startDate - The start date for fetching trades
+   * @param {String} endDate - The end date for fetching trades
+   * @returns {Promise<Object<String, Array>|undefined>} - Object containing trades grouped by
+   *  orderId or undefined if no trades found
+   */
   async getAll(startDate, endDate) {
     // Generate array of date chunks
     const dateChunks = generateDateChunks(
