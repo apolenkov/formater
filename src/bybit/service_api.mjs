@@ -113,6 +113,9 @@ export class BybitTradeService {
     });
   }
 
+  // TODO: make common chunk
+  // TODO: use abstract class for fetch and process chunk
+
   /**
    * Processes a single date chunk and fetches trades
    * @param {Object} chunk - The date chunk to process
@@ -120,7 +123,7 @@ export class BybitTradeService {
    * @param {number} total - Total number of chunks
    * @returns {Promise<Array>} - List of trades for this chunk
    */
-  async processChunk(chunk, index, total) {
+  async processTraderChunk(chunk, index, total) {
     const { chunkStart, chunkEnd } = chunk;
     const chunkStartStr = chunkStart.format('YYYY-MM-DD');
     const chunkEndStr = chunkEnd.format('YYYY-MM-DD');
@@ -176,7 +179,11 @@ export class BybitTradeService {
       dateChunks,
       async (previousPromise, chunk, index) => {
         const accumulator = await previousPromise;
-        const result = await this.processChunk(chunk, index, dateChunks.length);
+        const result = await this.processTraderChunk(
+          chunk,
+          index,
+          dateChunks.length,
+        );
 
         return result.length > 0 ? [...accumulator, result] : accumulator;
       },

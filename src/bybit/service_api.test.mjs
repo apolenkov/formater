@@ -11,6 +11,7 @@ describe('BybitTradeService', () => {
   const setupTest = () => {
     const mockClient = {
       getTransactionLog: stub(),
+      getDepositLogs: stub(),
     };
 
     const mockLogger = {
@@ -30,22 +31,22 @@ describe('BybitTradeService', () => {
     restore();
   });
 
-  describe('getTradesLogs', () => {
-    it('should fetch trades successfully with a single page', async () => {
+  describe('fetchLogs', () => {
+    it('should fetch logs successfully with a single page', async () => {
       // Setup
       const testContext = setupTest();
-      const { mockClient, mockLogger, service } = testContext;
+      const { mockLogger, service } = testContext;
 
       // Mock data
-      const mockTrades = [
+      const mockLogs = [
         { id: '1', symbol: 'BTCUSDT', price: '30000' },
         { id: '2', symbol: 'ETHUSDT', price: '2000' },
       ];
 
-      // Setup mock response
-      mockClient.getTransactionLog.resolves({
+      // Create a stub for the method
+      const methodStub = stub().resolves({
         result: {
-          list: mockTrades,
+          list: mockLogs,
           nextPageCursor: null,
         },
       });
@@ -53,15 +54,17 @@ describe('BybitTradeService', () => {
       const params = {
         startTimestamp: 1609459200000, // 2021-01-01
         endTimestamp: 1612137600000, // 2021-02-01
+        category: 'spot',
+        method: methodStub,
       };
 
       // Call the method
-      const result = await service.getTradesLogs(params);
+      const result = await service.fetchLogs(params);
 
       // Assertions
-      expect(result).to.deep.equal(mockTrades);
-      expect(mockClient.getTransactionLog.calledOnce).to.be.true;
-      expect(mockClient.getTransactionLog.firstCall.args[0]).to.deep.equal({
+      expect(result).to.deep.equal(mockLogs);
+      expect(methodStub.calledOnce).to.be.true;
+      expect(methodStub.firstCall.args[0]).to.deep.equal({
         category: 'spot',
         startTime: params.startTimestamp,
         endTime: params.endTimestamp,
@@ -74,25 +77,24 @@ describe('BybitTradeService', () => {
     it('should handle pagination correctly', async () => {
       // Setup
       const testContext = setupTest();
-      const { mockClient, mockLogger, service } = testContext;
+      const { mockLogger, service } = testContext;
 
-      // Mock data for first page
-      const mockTradesPage1 = [{ id: '1', symbol: 'BTCUSDT', price: '30000' }];
+      // Mock data for pages
+      const mockLogsPage1 = [{ id: '1', symbol: 'BTCUSDT', price: '30000' }];
+      const mockLogsPage2 = [{ id: '2', symbol: 'ETHUSDT', price: '2000' }];
 
-      // Mock data for second page
-      const mockTradesPage2 = [{ id: '2', symbol: 'ETHUSDT', price: '2000' }];
+      // Create a stub for the method with pagination
+      const methodStub = stub();
 
-      // Setup mock responses for pagination
-      mockClient.getTransactionLog.onFirstCall().resolves({
+      methodStub.onFirstCall().resolves({
         result: {
-          list: mockTradesPage1,
+          list: mockLogsPage1,
           nextPageCursor: 'next_page_token',
         },
       });
-
-      mockClient.getTransactionLog.onSecondCall().resolves({
+      methodStub.onSecondCall().resolves({
         result: {
-          list: mockTradesPage2,
+          list: mockLogsPage2,
           nextPageCursor: null,
         },
       });
@@ -100,17 +102,19 @@ describe('BybitTradeService', () => {
       const params = {
         startTimestamp: 1609459200000,
         endTimestamp: 1612137600000,
+        category: 'spot',
+        method: methodStub,
       };
 
       // Call the method
-      const result = await service.getTradesLogs(params);
+      const result = await service.fetchLogs(params);
 
       // Assertions
-      expect(result).to.deep.equal([...mockTradesPage1, ...mockTradesPage2]);
-      expect(mockClient.getTransactionLog.calledTwice).to.be.true;
+      expect(result).to.deep.equal([...mockLogsPage1, ...mockLogsPage2]);
+      expect(methodStub.calledTwice).to.be.true;
 
       // First call should not have cursor
-      expect(mockClient.getTransactionLog.firstCall.args[0]).to.deep.equal({
+      expect(methodStub.firstCall.args[0]).to.deep.equal({
         category: 'spot',
         startTime: params.startTimestamp,
         endTime: params.endTimestamp,
@@ -118,7 +122,7 @@ describe('BybitTradeService', () => {
       });
 
       // Second call should include the cursor
-      expect(mockClient.getTransactionLog.secondCall.args[0]).to.deep.equal({
+      expect(methodStub.secondCall.args[0]).to.deep.equal({
         category: 'spot',
         startTime: params.startTimestamp,
         endTime: params.endTimestamp,
@@ -133,36 +137,71 @@ describe('BybitTradeService', () => {
     it('should handle empty response gracefully', async () => {
       // Setup
       const testContext = setupTest();
-      const { mockClient, mockLogger, service } = testContext;
+      const { mockLogger, service } = testContext;
 
-      // Setup mock response with no list
-      mockClient.getTransactionLog.resolves({
+      // Create a stub for the method with empty response
+      const methodStub = stub().resolves({
         result: {},
       });
 
       const params = {
         startTimestamp: 1609459200000,
         endTimestamp: 1612137600000,
+        category: 'spot',
+        method: methodStub,
       };
 
       // Call the method
-      const result = await service.getTradesLogs(params);
+      const result = await service.fetchLogs(params);
 
       // Assertions
       expect(result).to.deep.equal([]);
       expect(mockLogger.warn.calledWith('No list in response')).to.be.true;
-      expect(mockClient.getTransactionLog.called).to.be.true;
+      expect(methodStub.called).to.be.true;
     });
 
     it('should handle API errors gracefully', async () => {
       // Setup
       const testContext = setupTest();
-      const { mockClient, mockLogger, service } = testContext;
+      const { mockLogger, service } = testContext;
 
-      // Setup mock to throw an error
+      // Create a stub for the method that throws an error
       const mockError = new Error('API Error');
+      const methodStub = stub().rejects(mockError);
 
-      mockClient.getTransactionLog.rejects(mockError);
+      const params = {
+        startTimestamp: 1609459200000,
+        endTimestamp: 1612137600000,
+        category: 'spot',
+        method: methodStub,
+      };
+
+      // Call the method
+      const result = await service.fetchLogs(params);
+
+      // Assertions
+      expect(result).to.deep.equal([]);
+      expect(mockLogger.error.calledWith('Error fetching spot logs')).to.be
+        .true;
+      expect(mockLogger.error.firstCall.args[1].error).to.equal('API Error');
+      expect(methodStub.called).to.be.true;
+    });
+  });
+
+  describe('getTradesLogs', () => {
+    it('should call fetchLogs with correct parameters', async () => {
+      // Setup
+      const testContext = setupTest();
+      const { service } = testContext;
+
+      // Mock data
+      const mockTrades = [
+        { id: '1', symbol: 'BTCUSDT', price: '30000' },
+        { id: '2', symbol: 'ETHUSDT', price: '2000' },
+      ];
+
+      // Create a stub for the fetchLogs method
+      const fetchLogsStub = stub(service, 'fetchLogs').resolves(mockTrades);
 
       const params = {
         startTimestamp: 1609459200000,
@@ -173,18 +212,60 @@ describe('BybitTradeService', () => {
       const result = await service.getTradesLogs(params);
 
       // Assertions
-      expect(result).to.deep.equal([]);
-
-      console.log(mockLogger.error);
-
-      expect(mockLogger.error.calledWith('Error fetching spot logs')).to.be
-        .true;
-      expect(mockLogger.error.firstCall.args[1].error).to.equal('API Error');
-      expect(mockClient.getTransactionLog.called).to.be.true;
+      expect(result).to.deep.equal(mockTrades);
+      expect(fetchLogsStub.calledOnce).to.be.true;
+      expect(fetchLogsStub.firstCall.args[0]).to.deep.include({
+        startTimestamp: params.startTimestamp,
+        endTimestamp: params.endTimestamp,
+        category: 'spot',
+      });
+      expect(fetchLogsStub.firstCall.args[0].method).to.equal(
+        service.client.getTransactionLog,
+      );
     });
   });
 
-  describe('processChunk', () => {
+  describe('getDepositLogs', () => {
+    it('should call fetchLogs with correct parameters', async () => {
+      // Setup
+      const testContext = setupTest();
+      const { service } = testContext;
+
+      // Mock data
+      const mockDeposits = [
+        { id: '1', coin: 'BTC', amount: '1.0' },
+        { id: '2', coin: 'ETH', amount: '10.0' },
+      ];
+
+      // Create a stub for the fetchLogs method
+      const fetchLogsStub = stub(service, 'fetchLogs').resolves(mockDeposits);
+
+      const params = {
+        startTimestamp: 1609459200000,
+        endTimestamp: 1612137600000,
+      };
+
+      // Call the method
+      const result = await service.getDepositLogs(params);
+
+      // Assertions
+      expect(result).to.deep.equal(mockDeposits);
+      expect(fetchLogsStub.calledOnce).to.be.true;
+      expect(fetchLogsStub.firstCall.args[0]).to.deep.include({
+        startTimestamp: params.startTimestamp,
+        endTimestamp: params.endTimestamp,
+        category: 'spot',
+      });
+      expect(fetchLogsStub.firstCall.args[0].method).to.equal(
+        service.client.getDepositLogs,
+      );
+    });
+  });
+
+  // TODO: add abstract logic
+  describe.skip('processChunk', () => {});
+
+  describe('processTraderChunk', () => {
     it('should process a chunk and return trades', async () => {
       // Setup
       const testContext = setupTest();
@@ -206,7 +287,7 @@ describe('BybitTradeService', () => {
       const chunk = { chunkStart, chunkEnd };
 
       // Call the method
-      const result = await service.processChunk(chunk, 0, 5);
+      const result = await service.processTraderChunk(chunk, 0, 5);
 
       // Assertions
       expect(result).to.deep.equal(mockTrades);
@@ -236,7 +317,7 @@ describe('BybitTradeService', () => {
       const chunk = { chunkStart, chunkEnd };
 
       // Call the method
-      const result = await service.processChunk(chunk, 0, 5);
+      const result = await service.processTraderChunk(chunk, 0, 5);
 
       // Assertions
       expect(result).to.deep.equal([]);
@@ -244,7 +325,12 @@ describe('BybitTradeService', () => {
     });
   });
 
+  // TODO: add deposit logic
+  describe.skip('processDepositChunk', () => {});
+
   describe('getAll', () => {
+    // TODO: add deposit logic
+
     it('should fetch all trades for the specified date range', async () => {
       const testContext = setupTest();
       const { mockLogger, service } = testContext;
@@ -268,8 +354,6 @@ describe('BybitTradeService', () => {
       // Call the method
       const result = await service.getAll(startDate, endDate);
 
-      console.log(result);
-
       // Assertions
       expect(result).to.be.an('object');
       expect(Object.keys(result)).to.have.lengthOf(2); // Two unique trades
@@ -283,8 +367,8 @@ describe('BybitTradeService', () => {
       const testContext = setupTest();
       const { mockLogger, service } = testContext;
 
-      // Mock the getTradesLogs method to return empty array
-      stub(service, 'getTradesLogs').resolves([]);
+      // Mock the processTraderChunk method to return empty array
+      stub(service, 'processTraderChunk').resolves([]);
 
       const startDate = '2021-01-01';
       const endDate = '2021-01-02';
