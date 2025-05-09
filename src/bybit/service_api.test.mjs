@@ -174,7 +174,11 @@ describe('BybitTradeService', () => {
 
       // Assertions
       expect(result).to.deep.equal([]);
-      expect(mockLogger.error.calledWith('Error fetching trades')).to.be.true;
+
+      console.log(mockLogger.error);
+
+      expect(mockLogger.error.calledWith('Error fetching spot logs')).to.be
+        .true;
       expect(mockLogger.error.firstCall.args[1].error).to.equal('API Error');
       expect(mockClient.getTransactionLog.called).to.be.true;
     });

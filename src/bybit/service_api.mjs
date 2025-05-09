@@ -21,15 +21,15 @@ export class BybitTradeService {
    * Recursively fetches trade logs from Bybit API with pagination
    * @param {Object} params - Request parameters
    * @param {number} [page=1] - Current page number
-   * @param {Array} [transfers=[]] - Accumulated transfers
+   * @param {Array} [items=[]] - Accumulated transfers
    * @param {string} [cursor] - Pagination cursor
-   * @returns {Promise<Array>} - List of trades
+   * @returns {Promise<Array>} - Logs
    */
-  async getTradesLogs(params, page = 1, transfers = [], cursor) {
-    const { startTimestamp, endTimestamp } = params;
+  async fetchLogs(params, page = 1, items = [], cursor) {
+    const { startTimestamp, endTimestamp, category, method } = params;
 
     const requestData = {
-      category: 'spot',
+      category,
       startTime: startTimestamp,
       endTime: endTimestamp,
       limit: SERVICE_CONSTANTS.PAGE_LIMIT,
@@ -38,26 +38,27 @@ export class BybitTradeService {
 
     try {
       this.logger.debug('Fetching transaction log', {
+        category,
         page,
         startTime: moment(startTimestamp).toISOString(),
         endTime: moment(endTimestamp).toISOString(),
         cursor,
       });
 
-      const response = await this.client.getTransactionLog(requestData);
+      const response = await method.call(this.client, requestData);
 
       if (!response.result?.list) {
         this.logger.warn('No list in response', { response });
 
-        return transfers;
+        return items;
       }
 
       const newItems = response.result.list.length;
 
       this.logger.debug(`Received ${newItems} items`, { page });
 
-      const newTransfers =
-        newItems > 0 ? _.concat(transfers, response.result.list) : transfers;
+      const updatedItems =
+        newItems > 0 ? _.concat(items, response.result.list) : items;
 
       const nextCursor = response.result.nextPageCursor;
 
@@ -67,19 +68,49 @@ export class BybitTradeService {
           setTimeout(resolve, SERVICE_CONSTANTS.DELAY),
         );
 
-        return this.getTradesLogs(params, page + 1, newTransfers, nextCursor);
+        return this.fetchLogs(params, page + 1, updatedItems, nextCursor);
       }
 
-      return newTransfers;
+      return updatedItems;
     } catch (error) {
-      this.logger.error('Error fetching trades', {
+      this.logger.error(`Error fetching ${category} logs`, {
         page,
         error: error.message,
         stack: error.stack,
       });
 
-      return transfers;
+      return items;
     }
+  }
+
+  /**
+   * Recursively fetches trade logs from Bybit API with pagination
+   * @param {number} startTimestamp - Request parameters
+   * @param {number} endTimestamp - Request parameters
+   * @returns {Promise<Array>} - List of trades
+   */
+  getDepositLogs({ startTimestamp, endTimestamp }) {
+    return this.fetchLogs({
+      startTimestamp,
+      endTimestamp,
+      category: 'spot',
+      method: this.client.getDepositLogs,
+    });
+  }
+
+  /**
+   * Recursively fetches trade logs from Bybit API with pagination
+   * @param {number} startTimestamp - Request parameters
+   * @param {number} endTimestamp - Request parameters
+   * @returns {Promise<Array>} - List of trades
+   */
+  getTradesLogs({ startTimestamp, endTimestamp }) {
+    return this.fetchLogs({
+      startTimestamp,
+      endTimestamp,
+      category: 'spot',
+      method: this.client.getTransactionLog,
+    });
   }
 
   /**
