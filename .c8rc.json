@@ -1,7 +1,7 @@
 {
   "all": true,
-  "include": ["libs/**/*.mjs", "src/**/*.mjs"],
-  "exclude": ["node_modules/**", "tests/**"],
+  "include": ["src/**/*.mjs"],
+  "exclude": ["node_modules/**", "src/**/*.test.mjs"],
   "reporter": ["text", "lcov", "html"],
   "check-coverage": true,
   "branches": 80,

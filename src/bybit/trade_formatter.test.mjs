@@ -2,8 +2,8 @@ import { expect } from 'chai';
 import { describe, it } from 'mocha';
 import moment from 'moment';
 
-import { SERVICE_CONSTANTS } from '../../src/bybit/service_constants.mjs';
-import { convertToIntelInvestFormat } from '../../src/bybit/trade_formatter.mjs';
+import { SERVICE_CONSTANTS } from './service_constants.mjs';
+import { convertToIntelInvestFormat } from './trade_formatter.mjs';
 
 describe('Trade Formatter', () => {
   describe('convertToIntelInvestFormat', () => {

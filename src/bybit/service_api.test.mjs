@@ -3,8 +3,8 @@ import { afterEach, describe, it } from 'mocha';
 import moment from 'moment';
 import { restore, stub } from 'sinon';
 
-import { BybitTradeService } from '../../src/bybit/service_api.mjs';
-import { SERVICE_CONSTANTS } from '../../src/bybit/service_constants.mjs';
+import { BybitTradeService } from './service_api.mjs';
+import { SERVICE_CONSTANTS } from './service_constants.mjs';
 
 describe('BybitTradeService', () => {
   // Setup function to create fresh mocks and service for each test

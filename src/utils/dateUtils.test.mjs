@@ -8,7 +8,7 @@ import {
   getTodayFormatted,
   getTodayMinusOneMonth,
   isValidDateFormat,
-} from '../../src/utils/dateUtils.mjs';
+} from './dateUtils.mjs';
 
 describe('Date Utils Tests', () => {
   describe('generateDateChunks', () => {
