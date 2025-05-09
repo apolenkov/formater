@@ -63,7 +63,9 @@ export class BybitTradeService {
 
       if (nextCursor) {
         // Add a small delay to avoid rate limiting
-        await new Promise(resolve => setTimeout(resolve, 100));
+        await new Promise(resolve =>
+          setTimeout(resolve, SERVICE_CONSTANTS.DELAY),
+        );
 
         return this.getTradesLogs(params, page + 1, newTransfers, nextCursor);
       }
@@ -126,7 +128,7 @@ export class BybitTradeService {
    * @param {String} startDate - The start date for fetching trades
    * @param {String} endDate - The end date for fetching trades
    * @returns {Promise<Object<String, Array>>} - Object containing trades grouped by
-   *  orderId or undefined if no trades found
+   *  tradeId or undefined if no trades found
    */
   async getAll(startDate, endDate) {
     // Generate array of date chunks
@@ -160,11 +162,11 @@ export class BybitTradeService {
       return {};
     }
 
-    // Group trades by orderId and convert to CSV format
-    const groupedTrades = _.groupBy(trades, 'orderId');
+    // Group trades by tradeId and convert to CSV format
+    const groupedTrades = _.groupBy(trades, SERVICE_CONSTANTS.GRP);
 
     this.logger.debug(
-      `Grouped into ${Object.keys(groupedTrades).length} unique orders`,
+      `Grouped into ${Object.keys(groupedTrades).length} unique trades`,
     );
 
     return groupedTrades;

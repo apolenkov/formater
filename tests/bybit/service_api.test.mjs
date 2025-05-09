@@ -247,8 +247,8 @@ describe('BybitTradeService', () => {
 
       // Mock data
       const mockTrades = [
-        { id: '1', symbol: 'BTCUSDT', price: '30000', orderId: 'order1' },
-        { id: '2', symbol: 'ETHUSDT', price: '2000', orderId: 'order2' },
+        { id: '1', symbol: 'BTCUSDT', price: '30000', tradeId: 'trade1' },
+        { id: '2', symbol: 'ETHUSDT', price: '2000', tradeId: 'trade2' },
       ];
 
       // Mock the getTradesLogs method to return trades for two chunks
@@ -268,9 +268,9 @@ describe('BybitTradeService', () => {
 
       // Assertions
       expect(result).to.be.an('object');
-      expect(Object.keys(result)).to.have.lengthOf(2); // Two unique orders
-      expect(result['order1']).to.deep.equal([mockTrades[0]]);
-      expect(result['order2']).to.deep.equal([mockTrades[1]]);
+      expect(Object.keys(result)).to.have.lengthOf(2); // Two unique trades
+      expect(result['trade1']).to.deep.equal([mockTrades[0]]);
+      expect(result['trade2']).to.deep.equal([mockTrades[1]]);
       expect(mockLogger.info.calledWith('Processing complete')).to.be.true;
       expect(mockLogger.warn.called).to.be.false; // No warning for trades found
     });

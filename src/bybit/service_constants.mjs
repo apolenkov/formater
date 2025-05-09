@@ -8,6 +8,9 @@ export const SERVICE_CONSTANTS = {
   },
 
   BUYING_TYPE: 'Buy',
+  GRP: 'tradeId',
+
+  DELAY: 50,
 
   // Trade source
   TRADE_SOURCE: 'bybit',

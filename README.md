@@ -13,7 +13,7 @@ imported into IntelInvest for accurate portfolio tracking and analysis.
 
 - Exports Bybit trading history and converts it to IntelInvest-compatible CSV format
 - Properly handles custom date ranges for data export
-- Maintains transaction integrity and chronological order
+- Maintains transaction integrity and chronological trades
 - Ensures proper currency pair formatting
 - Detailed logging for troubleshooting
 

@@ -11,7 +11,7 @@ describe('Trade Formatter', () => {
       // Arrange
       const timestamp = Date.now();
       const formattedDate = moment(timestamp).format('DD.MM.YYYY HH:mm:ss');
-      const orderId = 'order123';
+      const tradeId = 'trade123';
       const trade = [
         {
           side: SERVICE_CONSTANTS.BUYING_TYPE,
@@ -19,13 +19,13 @@ describe('Trade Formatter', () => {
           cashFlow: '-100',
           currency: 'BTC',
           tradePrice: '20000',
-          orderId,
+          tradeId,
         },
         {
           cashFlow: '2000000',
           currency: 'USDT',
           feeRate: '0.1',
-          orderId,
+          tradeId,
         },
       ];
 
@@ -45,7 +45,7 @@ describe('Trade Formatter', () => {
       expect(dealInParts[4]).to.equal('20000');
       expect(dealInParts[5]).to.equal('0.1');
       expect(dealInParts[9]).to.equal('USDT');
-      expect(dealInParts[11]).to.equal(orderId);
+      expect(dealInParts[11]).to.equal(tradeId);
       expect(dealInParts[12]).to.equal(SERVICE_CONSTANTS.TRADE_SOURCE);
 
       const dealOutParts = lines[1].split(';');
@@ -57,7 +57,7 @@ describe('Trade Formatter', () => {
       expect(dealOutParts[4]).to.equal('1');
       expect(dealOutParts[5]).to.equal('0');
       expect(dealOutParts[9]).to.equal('USD');
-      expect(dealOutParts[11]).to.equal(orderId);
+      expect(dealOutParts[11]).to.equal(tradeId);
       expect(dealOutParts[12]).to.equal(SERVICE_CONSTANTS.TRADE_SOURCE);
     });
 
@@ -65,7 +65,7 @@ describe('Trade Formatter', () => {
       // Arrange
       const timestamp = Date.now();
       const formattedDate = moment(timestamp).format('DD.MM.YYYY HH:mm:ss');
-      const orderId = 'order456';
+      const tradeId = 'trade456';
       const trade = [
         {
           side: SERVICE_CONSTANTS.TRADE_TYPES.SHARE_SELL,
@@ -73,13 +73,13 @@ describe('Trade Formatter', () => {
           cashFlow: '0.5',
           currency: 'ETH',
           tradePrice: '1500',
-          orderId,
+          tradeId,
         },
         {
           cashFlow: '-750',
           currency: 'USDT',
           feeRate: '0.2',
-          orderId,
+          tradeId,
         },
       ];
 
@@ -109,7 +109,7 @@ describe('Trade Formatter', () => {
     it('should handle large numbers correctly using Big.js', () => {
       // Arrange
       const timestamp = Date.now();
-      const orderId = 'order789';
+      const tradeId = 'trade789';
       const trade = [
         {
           side: SERVICE_CONSTANTS.BUYING_TYPE,
@@ -117,13 +117,13 @@ describe('Trade Formatter', () => {
           cashFlow: '-0.00000001',
           currency: 'BTC',
           tradePrice: '20000',
-          orderId,
+          tradeId,
         },
         {
           cashFlow: '0.0000002',
           currency: 'USDT',
           feeRate: '0.001',
-          orderId,
+          tradeId,
         },
       ];
 

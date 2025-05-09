@@ -11,12 +11,13 @@ Big.NE = -40; // Negative exponent limit
 /**
  *
  * Converts a Bybit trade to IntelInvest format
- * @param {Array} trade - Pair of trade entries
+ * @param {Array} trades - Pair of trade entries
  * @returns {string} - Formatted CSV lines
  */
-export function convertToIntelInvestFormat(trade) {
-  // TODO: Check case > 2
-  const [base, target] = trade;
+export function convertToIntelInvestFormat(trades) {
+  if (trades.length > 2) throw new Error('In trade pair must be iteration');
+
+  const [base, target] = trades;
 
   const isBuy = base.side === SERVICE_CONSTANTS.BUYING_TYPE;
   const typeIn = isBuy
@@ -45,7 +46,7 @@ export function convertToIntelInvestFormat(trade) {
     currency: target.currency,
     feeCurrency: target.currency,
     note: '',
-    linkId: base.orderId,
+    linkId: base.tradeId,
     tradeSystemId: SERVICE_CONSTANTS.TRADE_SOURCE,
   };
 
@@ -61,7 +62,7 @@ export function convertToIntelInvestFormat(trade) {
     currency: 'USD',
     feeCurrency: 'USD',
     note: '',
-    linkId: base.orderId,
+    linkId: base.tradeId,
     tradeSystemId: SERVICE_CONSTANTS.TRADE_SOURCE,
   };
 
