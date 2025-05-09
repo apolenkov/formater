@@ -2,13 +2,38 @@ import _ from 'lodash';
 import moment from 'moment';
 
 /**
+ * Get today's date in YYYY-MM-DD format
+ * @returns {string} Today's date
+ */
+function getTodayFormatted() {
+  return moment().format('YYYY-MM-DD');
+}
+
+/**
+ * Get date from one month ago in YYYY-MM-DD format
+ * @returns {string} Date from one month ago
+ */
+function getTodayMinusOneMonth() {
+  return moment().subtract(1, 'months').format('YYYY-MM-DD');
+}
+
+/**
+ * Validate date format (YYYY-MM-DD)
+ * @param {string} dateString - Date string to validate
+ * @returns {boolean} Whether the date is valid
+ */
+function isValidDateFormat(dateString) {
+  return moment(dateString, 'YYYY-MM-DD', true).isValid();
+}
+
+/**
  * Generates date chunks for API requests
  * @param {String} startDate - Start date
  * @param {String} endDate - End date
  * @param {number} chunkSizeInDays - Size of each chunk in days
  * @returns {Array<Object>} - Array of date chunks
  */
-export function generateDateChunks(startDate, endDate, chunkSizeInDays) {
+function generateDateChunks(startDate, endDate, chunkSizeInDays) {
   // Convert dates to moment objects
   const start = moment(startDate);
   const end = moment(endDate);
@@ -56,3 +81,10 @@ export function generateDateChunks(startDate, endDate, chunkSizeInDays) {
 
   return chunks;
 }
+
+export {
+  generateDateChunks,
+  getTodayFormatted,
+  getTodayMinusOneMonth,
+  isValidDateFormat,
+};
