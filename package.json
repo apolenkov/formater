@@ -43,7 +43,6 @@
     "format:dry": "yarn prettier --check .",
     "lint": "yarn eslint .",
     "fix": "yarn eslint --fix .",
-    "prepare": "husky install",
     "test": "mocha 'tests/**/*.test.mjs'",
     "test:coverage": "c8 npm test",
     "bybit": "node bybit.mjs",
