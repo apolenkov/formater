@@ -107,9 +107,6 @@ module.exports = {
     'semi': 'error', // Require semicolons
     'quotes': ['error', 'single'], // Single quotes for strings
 
-    // TODO: Remove after prettier will fix
-    // 'max-len': ['error', 80, { ignoreUrls: true }], // Max line length 80
-
     'indent': ['error', 2, { SwitchCase: 1 }], // 2 space indent (upgraded)
     'eol-last': 'error', // Newline at end of file
     'no-tabs': 'error', // No tabs
