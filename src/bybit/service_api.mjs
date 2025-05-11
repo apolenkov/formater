@@ -2,7 +2,7 @@ import _ from 'lodash';
 import moment from 'moment';
 
 import { generateDateChunks } from '../utils/dateUtils.mjs';
-import { SERVICE_CONSTANTS } from './service_constants.mjs';
+import { SERVICE_CONFIG } from './service_config.mjs';
 
 /**
  * Class for handling Bybit API operations
@@ -32,7 +32,7 @@ export class BybitTradeService {
       category,
       startTime: startTimestamp,
       endTime: endTimestamp,
-      limit: SERVICE_CONSTANTS.PAGE_LIMIT,
+      limit: SERVICE_CONFIG.PAGE_LIMIT,
       ...(cursor && { cursor }),
     };
 
@@ -64,9 +64,7 @@ export class BybitTradeService {
 
       if (nextCursor) {
         // Add a small delay to avoid rate limiting
-        await new Promise(resolve =>
-          setTimeout(resolve, SERVICE_CONSTANTS.DELAY),
-        );
+        await new Promise(resolve => setTimeout(resolve, SERVICE_CONFIG.DELAY));
 
         return this.fetchLogs(params, page + 1, updatedItems, nextCursor);
       }
@@ -169,7 +167,7 @@ export class BybitTradeService {
     const dateChunks = generateDateChunks(
       startDate,
       endDate,
-      SERVICE_CONSTANTS.CHUNK_SIZE_DAYS,
+      SERVICE_CONFIG.CHUNK_SIZE_DAYS,
     );
 
     this.logger.info(`Generated ${dateChunks.length} date chunks`);
@@ -201,7 +199,7 @@ export class BybitTradeService {
     }
 
     // Group trades by tradeId and convert to CSV format
-    const groupedTrades = _.groupBy(trades, SERVICE_CONSTANTS.GRP);
+    const groupedTrades = _.groupBy(trades, SERVICE_CONFIG.GRP);
 
     this.logger.debug(
       `Grouped into ${Object.keys(groupedTrades).length} unique trades`,

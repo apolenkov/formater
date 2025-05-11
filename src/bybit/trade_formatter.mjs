@@ -2,7 +2,7 @@ import { Big } from 'big.js';
 import _ from 'lodash';
 import moment from 'moment';
 
-import { SERVICE_CONSTANTS } from './service_constants.mjs';
+import { SERVICE_CONFIG } from './service_config.mjs';
 
 // Configure Big.js to use fixed-point notation instead of exponential
 Big.PE = 40; // Positive exponent limit
@@ -19,13 +19,13 @@ export function convertToIntelInvestFormat(trades) {
 
   const [base, target] = trades;
 
-  const isBuy = base.side === SERVICE_CONSTANTS.BUYING_TYPE;
+  const isBuy = base.side === SERVICE_CONFIG.SIDE_NAME;
   const typeIn = isBuy
-    ? SERVICE_CONSTANTS.TRADE_TYPES.SHARE_BUY
-    : SERVICE_CONSTANTS.TRADE_TYPES.SHARE_SELL;
+    ? SERVICE_CONFIG.TRADE_TYPES.SHARE_BUY
+    : SERVICE_CONFIG.TRADE_TYPES.SHARE_SELL;
   const typeOut = isBuy
-    ? SERVICE_CONSTANTS.TRADE_TYPES.SHARE_OUT
-    : SERVICE_CONSTANTS.TRADE_TYPES.SHARE_IN;
+    ? SERVICE_CONFIG.TRADE_TYPES.SHARE_OUT
+    : SERVICE_CONFIG.TRADE_TYPES.SHARE_IN;
 
   const formattedDate = moment(parseInt(base.transactionTime, 10)).format(
     'DD.MM.YYYY HH:mm:ss',
@@ -47,7 +47,7 @@ export function convertToIntelInvestFormat(trades) {
     feeCurrency: target.currency,
     note: '',
     linkId: base.tradeId,
-    tradeSystemId: SERVICE_CONSTANTS.TRADE_SOURCE,
+    tradeSystemId: SERVICE_CONFIG.SYSTEM_NAME,
   };
 
   const dealOutData = {
@@ -63,7 +63,7 @@ export function convertToIntelInvestFormat(trades) {
     feeCurrency: 'USD',
     note: '',
     linkId: base.tradeId,
-    tradeSystemId: SERVICE_CONSTANTS.TRADE_SOURCE,
+    tradeSystemId: SERVICE_CONFIG.SYSTEM_NAME,
   };
 
   const dealIn = _.values(dealInData).join(';');

@@ -4,7 +4,7 @@ import moment from 'moment';
 import { restore, stub } from 'sinon';
 
 import { BybitTradeService } from './service_api.mjs';
-import { SERVICE_CONSTANTS } from './service_constants.mjs';
+import { SERVICE_CONFIG } from './service_config.mjs';
 
 describe('BybitTradeService', () => {
   // Setup function to create fresh mocks and service for each test
@@ -68,7 +68,7 @@ describe('BybitTradeService', () => {
         category: 'spot',
         startTime: params.startTimestamp,
         endTime: params.endTimestamp,
-        limit: SERVICE_CONSTANTS.PAGE_LIMIT,
+        limit: SERVICE_CONFIG.PAGE_LIMIT,
       });
       expect(mockLogger.debug.calledWith('Fetching transaction log')).to.be
         .true;
@@ -118,7 +118,7 @@ describe('BybitTradeService', () => {
         category: 'spot',
         startTime: params.startTimestamp,
         endTime: params.endTimestamp,
-        limit: SERVICE_CONSTANTS.PAGE_LIMIT,
+        limit: SERVICE_CONFIG.PAGE_LIMIT,
       });
 
       // Second call should include the cursor
@@ -126,7 +126,7 @@ describe('BybitTradeService', () => {
         category: 'spot',
         startTime: params.startTimestamp,
         endTime: params.endTimestamp,
-        limit: SERVICE_CONSTANTS.PAGE_LIMIT,
+        limit: SERVICE_CONFIG.PAGE_LIMIT,
         cursor: 'next_page_token',
       });
 

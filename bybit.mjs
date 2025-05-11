@@ -8,7 +8,7 @@ import _ from 'lodash';
 
 import { APP_CONFIG } from './src/app_config.mjs';
 import { BybitTradeService } from './src/bybit/service_api.mjs';
-import { SERVICE_CONSTANTS } from './src/bybit/service_constants.mjs';
+import { SERVICE_CONFIG } from './src/bybit/service_config.mjs';
 import { convertToIntelInvestFormat } from './src/bybit/trade_formatter.mjs';
 import { setupLogger } from './src/logger.mjs';
 import {
@@ -20,7 +20,7 @@ import {
 dotenv.config();
 
 // Initialize logger
-const logger = setupLogger(SERVICE_CONSTANTS.INTEGRATION_NAME);
+const logger = setupLogger(SERVICE_CONFIG.LOG_INTEGRATION_NAME);
 
 // Bybit API client initialization-
 const client = new RestClientV5({
