@@ -6,10 +6,10 @@ import { Command } from 'commander';
 import dotenv from 'dotenv';
 import _ from 'lodash';
 
+import { APP_CONFIG } from './src/app_config.mjs';
 import { BybitTradeService } from './src/bybit/service_api.mjs';
 import { SERVICE_CONSTANTS } from './src/bybit/service_constants.mjs';
 import { convertToIntelInvestFormat } from './src/bybit/trade_formatter.mjs';
-import { CONSTANTS } from './src/constants.mjs';
 import { setupLogger } from './src/logger.mjs';
 import {
   getTodayFormatted,
@@ -45,11 +45,11 @@ async function exportTrades(startDate, endDate) {
   const csvRows = _.values(
     _.mapValues(trades, tradeGroup => convertToIntelInvestFormat(tradeGroup)),
   );
-  const csvContent = _.concat([CONSTANTS.CSV_HEADER], csvRows).join('\n');
+  const csvContent = _.concat([APP_CONFIG.CSV_HEADER], csvRows).join('\n');
 
   // Write to file
   const fileName = path.join(
-    CONSTANTS.PATHS.OUTPUT_DIR,
+    APP_CONFIG.PATHS.OUTPUT_DIR,
     `bybit_trades_${startDate}_to_${endDate}.csv`,
   );
 

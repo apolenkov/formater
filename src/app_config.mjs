@@ -1,4 +1,4 @@
-export const CONSTANTS = {
+export const APP_CONFIG = {
   // File paths
   PATHS: {
     LOGS_DIR: 'logs',
