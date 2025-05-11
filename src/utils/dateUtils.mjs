@@ -1,90 +1,78 @@
-import _ from 'lodash';
 import moment from 'moment';
 
 /**
- * Get today's date in YYYY-MM-DD format
- * @returns {string} Today's date
+ * Generates date chunks between start and end dates with specified chunk size
+ * @param {string} startDate - Start date in YYYY-MM-DD format
+ * @param {string} endDate - End date in YYYY-MM-DD format
+ * @param {number} chunkSize - Size of each chunk in days
+ * @returns {Array} Array of objects with chunkStart and chunkEnd properties
  */
-function getTodayFormatted() {
+export function generateDateChunks(startDate, endDate, chunkSize) {
+  // Validate date formats
+  if (!isValidDateFormat(startDate) || !isValidDateFormat(endDate))
+    throw new Error('Invalid date format. Please use YYYY-MM-DD format.');
+
+  const start = moment(startDate);
+  const end = moment(endDate);
+
+  // Validate date range
+  if (start.isAfter(end)) throw new Error('Start date must be before end date');
+
+  const generateChunks = (currentStart, accumulatedChunks = []) => {
+    if (currentStart.isAfter(end)) return accumulatedChunks;
+
+    const currentEnd = moment.min(
+      currentStart.clone().add(chunkSize - 1, 'days'),
+      end.clone(),
+    );
+
+    const chunks = [
+      ...accumulatedChunks,
+      {
+        chunkStart: currentStart.clone(),
+        chunkEnd: currentEnd.clone(),
+      },
+    ];
+
+    const nextStart = currentEnd.clone().add(1, 'days');
+
+    return generateChunks(nextStart, chunks);
+  };
+
+  return generateChunks(start.clone());
+}
+
+/**
+ * Returns today's date in YYYY-MM-DD format
+ * @returns {string} Today's date formatted as YYYY-MM-DD
+ */
+export function getTodayFormatted() {
   return moment().format('YYYY-MM-DD');
 }
 
 /**
- * Get date from one month ago in YYYY-MM-DD format
- * @returns {string} Date from one month ago
+ * Returns the date from one month ago in YYYY-MM-DD format
+ * @returns {string} Date from one month ago formatted as YYYY-MM-DD
  */
-function getTodayMinusOneMonth() {
+export function getTodayMinusOneMonth() {
   return moment().subtract(1, 'months').format('YYYY-MM-DD');
 }
 
 /**
- * Validate date format (YYYY-MM-DD)
- * @param {string} dateString - Date string to validate
- * @returns {boolean} Whether the date is valid
+ * Validates if a string is in YYYY-MM-DD format and represents a valid date
+ * @param {string} dateString - The date string to validate
+ * @returns {boolean} True if the date is valid and in correct format
  */
-function isValidDateFormat(dateString) {
-  return moment(dateString, 'YYYY-MM-DD', true).isValid();
+export function isValidDateFormat(dateString) {
+  if (!dateString || typeof dateString !== 'string') return false;
+
+  // Check format using regex (YYYY-MM-DD)
+  const regex = /^\d{4}-\d{2}-\d{2}$/;
+
+  if (!regex.test(dateString)) return false;
+
+  // Check if it's a valid date
+  const date = moment(dateString, 'YYYY-MM-DD', true);
+
+  return date.isValid();
 }
-
-/**
- * Generates date chunks for API requests
- * @param {String} startDate - Start date
- * @param {String} endDate - End date
- * @param {number} chunkSizeInDays - Size of each chunk in days
- * @returns {Array<Object>} - Array of date chunks
- */
-function generateDateChunks(startDate, endDate, chunkSizeInDays) {
-  // Convert dates to moment objects
-  const start = moment(startDate);
-  const end = moment(endDate);
-
-  if (!start.isValid() || !end.isValid()) {
-    const error = 'Invalid date format. Please use YYYY-MM-DD format.';
-
-    throw new Error(error);
-  }
-
-  if (start.isAfter(end)) {
-    const error = 'Start date must be before end date';
-
-    throw new Error(error);
-  }
-
-  // Handle case when start and end are the same
-  if (start.isSame(end, 'day')) return [{ chunkStart: start, chunkEnd: end }];
-
-  const totalDays = end.diff(start, 'days');
-
-  // Calculate how many complete chunks we need
-  const completeChunks = Math.floor(totalDays / chunkSizeInDays);
-
-  // Generate the chunks
-  const chunks = _.times(completeChunks, index => {
-    const chunkStart = start.clone().add(index * chunkSizeInDays, 'days');
-    const chunkEnd = chunkStart.clone().add(chunkSizeInDays - 1, 'days');
-
-    return { chunkStart, chunkEnd };
-  });
-
-  // Add the final chunk if needed
-  const lastChunkStart =
-    completeChunks > 0
-      ? start.clone().add(completeChunks * chunkSizeInDays, 'days')
-      : start.clone();
-
-  if (lastChunkStart.isSameOrBefore(end, 'day')) {
-    chunks.push({
-      chunkStart: lastChunkStart,
-      chunkEnd: end,
-    });
-  }
-
-  return chunks;
-}
-
-export {
-  generateDateChunks,
-  getTodayFormatted,
-  getTodayMinusOneMonth,
-  isValidDateFormat,
-};
