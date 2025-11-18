@@ -9,7 +9,7 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "axios": "^1.9.0",
+    "axios": "^1.13.2",
     "big.js": "^7.0.1",
     "bybit-api": "^4.1.7",
     "commander": "^13.1.0",
